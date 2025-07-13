@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseñador de Camisetas - Mi Emprendimiento</title>
+    <link rel="stylesheet" href="estilos-camiseta.css">
+</head>
+<body>
+    <header>
+        <h1>Crea Tu Camiseta Deportiva Única</h1>
+        <p>Personaliza tu estilo, expresa tu pasión por el deporte.</p>
+    </header>
+
+    <main class="diseñador-container">
+        <section class="panel-opciones">
+            <h2>Opciones de Diseño</h2>
+
+            <div class="opcion-grupo">
+                <h3>1. Selecciona el Tipo de Camiseta</h3>
+                <div class="opciones-selector">
+                    <button class="selector-item active" data-tipo="futbol">Fútbol</button>
+                    <button class="selector-item" data-tipo="training">Entrenamiento</button>
+                    <button class="selector-item" data-tipo="casual">Casual</button>
+                </div>
+            </div>
+
+            <div class="opcion-grupo">
+                <h3>2. Elige el Color Base</h3>
+                <div class="opciones-color">
+                    <div class="color-box selected" style="background-color: #ffffff;" data-color="blanco"></div>
+                    <div class="color-box" style="background-color: #ff0000;" data-color="rojo"></div>
+                    <div class="color-box" style="background-color: #0000ff;" data-color="azul"></div>
+                    <div class="color-box" style="background-color: #008000;" data-color="verde"></div>
+                    <div class="color-box" style="background-color: #ffd700;" data-color="amarillo"></div>
+                    <div class="color-box" style="background-color: #000000;" data-color="negro"></div>
+                </div>
+            </div>
+
+            <div class="opcion-grupo">
+                <h3>3. Añade Texto Personalizado</h3>
+                <input type="text" id="texto-personalizado" placeholder="Ej: Tu Nombre, Número, Equipo">
+                <div class="opciones-fuente-color">
+                    <select id="fuente-texto">
+                        <option value="Arial">Arial</option>
+                        <option value="Verdana">Verdana</option>
+                        <option value="Georgia">Georgia</option>
+                    </select>
+                    <input type="color" id="color-texto" value="#000000">
+                </div>
+                <button class="btn-aplicar">Aplicar Texto</button>
+            </div>
+
+            <div class="opcion-grupo">
+                <h3>4. Sube Tu Logo o Imagen</h3>
+                <input type="file" id="subir-logo" accept="image/*">
+                <button class="btn-aplicar">Subir Imagen</button>
+            </div>
+
+            <div class="opcion-grupo">
+                <h3>5. Selecciona Iconos y Diseños</h3>
+                <div class="opciones-iconos">
+                    <img src="https://via.placeholder.com/60x60/87CEEB/FFFFFF?text=⚽" alt="Balón de Fútbol" class="icono-diseño" data-icon="balon">
+                    <img src="https://via.placeholder.com/60x60/FFD700/000000?text=⭐" alt="Estrella" class="icono-diseño" data-icon="estrella">
+                    <img src="https://via.placeholder.com/60x60/FF6347/FFFFFF?text=🔥" alt="Fuego" class="icono-diseño" data-icon="fuego">
+                    </div>
+            </div>
+
+            <button class="btn-finalizar">Finalizar Diseño y Solicitar Presupuesto</button>
+
+        </section>
+
+        <section class="panel-previsualizacion">
+            <h2>Vista Previa de Tu Camiseta</h2>
+            <div class="mockup-camiseta">
+                <img src="https://via.placeholder.com/400x400/CCCCCC/FFFFFF?text=CAMISETA" alt="Camiseta base" id="mockup-img">
+                <div id="capa-texto" class="capa-diseno"></div>
+                <div id="capa-logo" class="capa-diseno"></div>
+            </div>
+            <p class="instruccion-previa">Tu diseño final aparecerá aquí. Los cambios se actualizarán automáticamente.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mi Emprendimiento de Camisetas Personalizadas. Todos los derechos reservados.</p>
+    </footer>
+
+    </body>
+</html>

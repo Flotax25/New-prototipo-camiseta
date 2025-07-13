@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseña Tu Camiseta Personalizada</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos Generales y Reseteo Básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom, #1A2B42, #000000); /* Celeste oscuro a negro */
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Permite scroll vertical en el body */
+        }
+
+        /* Contenedor Principal de la Aplicación */
+        .app-container {
+            display: flex;
+            flex-grow: 1;
+            margin: 20px;
+            background-color: rgba(255, 255, 255, 0.05); /* Fondo semitransparente */
+            border-radius: 10px;
+            overflow: hidden; /* Mantiene los bordes redondeados internos */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            min-height: calc(100vh - 40px); /* Asegura que el contenedor tenga al menos la altura de la ventana - margen */
+        }
+
+        /* Barra Lateral Izquierda (Iconos de la Aplicación) */
+        .sidebar-left {
+            width: 60px;
+            background-color: rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            gap: 25px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-left .icon {
+            font-size: 28px;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar-left .icon:hover {
+            color: #fff;
+        }
+
+        /* Área Principal de Contenido (Modelo 3D y Panel de Opciones) */
+        .main-content {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        /* Sección del Modelo 3D */
+        .product-display {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.1);
+            position: relative;
+            padding: 20px;
+            overflow: hidden;
+            /* Importante para que los elementos arrastrables no se salgan */
+        }
+
+        .product-display img#mockup-img {
+            width: 90%;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
+            max-width: 1000px;
+            max-height: 700px;
+            display: block;
+            margin: auto;
+        }
+
+        .product-display .placeholder-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        /* Estilos para Texto, Número y Logo superpuestos - ¡HAZLOS ARRASTRABLES! */
+        #camiseta-texto-superpuesto, 
+        #camiseta-numero-superpuesto, 
+        #camiseta-logo-superpuesto {
+            position: absolute;
+            /* Esencial para el arrastre */
+            cursor: grab;
+            /* Indica que se puede arrastrar */
+            user-select: none;
+            /* Evita la selección de texto al arrastrar */
+            z-index: 10;
+            /* Para que estén por encima de la camiseta */
+        }
+
+        #camiseta-texto-superpuesto {
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            top: 40%; 
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+        }
+        #camiseta-numero-superpuesto {
+            font-size: 60px;
+            font-weight: bold;
+            color: white; /* Color predeterminado para el número */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none; /* Oculto por defecto */
+        }
+        #camiseta-logo-superpuesto {
+            max-width: 120px;
+            max-height: 120px;
+            object-fit: contain;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            /* Oculto por defecto */
+        }
+
+
+        /* Panel de Personalización Derecha */
+        .customization-panel {
+            width: 350px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-header h2 {
+            font-size: 1.2em;
+            font-weight: normal;
+        }
+
+        .panel-header .header-icons i {
+            font-size: 24px;
+            margin-left: 15px;
+            cursor: pointer;
+            color: #ccc;
+        }
+        .header-icons .favorite-count {
+            font-size: 0.7em;
+            vertical-align: super;
+            background-color: #007bff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            margin-left: -10px;
+            position: relative;
+            top: -8px;
+            left: -5px;
+        }
+
+        /* Navegación por Pestañas */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-button {
+            flex-grow: 1;
+            padding: 12px 0;
+            text-align: center;
+            cursor: pointer;
+            color: #ccc;
+            font-weight: bold;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .tab-button.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-bottom: 3px solid #007bff; /* Azul brillante para la pestaña activa */
+        }
+
+        .tab-button:not(.active):hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Contenido de las Pestañas */
+        .tab-content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto; /* Permite scroll si el contenido es largo */
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Grid de Diseños de Camisetas */
+        .design-grid, .color-grid, .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+            gap: 15px;
+        }
+
+        .design-item, .color-item, .logo-item {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .design-item img, .logo-item img {
+            width: 100%;
+            height: 80px; /* Altura fija para las miniaturas */
+            object-fit: contain;
+            margin-bottom: 5px;
+        }
+        .color-item {
+            height: 80px;
+            width: 100%;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: rgba(255,255,255,0.8);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .design-item.selected, .color-item.selected, .logo-item.selected {
+            border-color: #007bff;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .design-item:hover, .color-item:hover, .logo-item:hover {
+            border-color: #007bff;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .design-item p, .color-item p, .logo-item p {
+            font-size: 0.85em;
+            color: #ccc;
+        }
+        .design-upload-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Estilos específicos para la pestaña de Texto */
+        .text-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .text-controls input[type="text"], .text-controls input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+            font-size: 1.1em;
+        }
+        .text-controls select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #fff;
+            font-size: 1.1em;
+            appearance: none;
+            /* Elimina estilos por defecto del select */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20width%3D%22292%22%20height%3D%22292%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069L146%20208%205%2069z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+        }
+        .text-controls input[type="color"] {
+            width: 100%;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .text-controls button, .upload-button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .text-controls button:hover, .upload-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilo para el input de archivo (oculto) */
+        #upload-design-input, #upload-logo-input {
+            display: none;
+        }
+        .upload-button {
+            text-align: center;
+            margin-top: 15px;
+            display: block;
+            width: 100%;
+        }
+
+        /* Icono de Discord flotante (parte inferior derecha) */
+        .discord-floating {
+            position: fixed;
+            bottom: 80px; /* Ajustado para el footer */
+            right: 20px;
+            background-color: #7289DA;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 1000;
+        }
+
+        .discord-floating:hover {
+            transform: scale(1.1);
+            background-color: #5b6fb5;
+        }
+
+        .discord-floating i {
+            color: #fff;
+            font-size: 30px;
+        }
+
+        /* Estilos para el scrollbar (opcional, para personalizar su apariencia) */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* --- NUEVOS ESTILOS PARA LAS FUNCIONALIDADES DE LOS ICONOS --- */
+
+        /* Estilos generales para popups/modales */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup {
+            background-color: #2b3a55;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            width: 90%;
+            color: #fff;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .overlay.active .popup {
+            transform: translateY(0);
+        }
+
+        .popup h3 {
+            color: #87CEEB;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .popup p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .popup ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 15px;
+        }
+
+        .popup ul li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.9em;
+        }
+
+        .popup ul li::before {
+            content: '•';
+            color: #87CEEB;
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+
+        .popup .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .popup .close-btn:hover {
+            color: #fff;
+        }
+
+        /* Barra de Búsqueda */
+        #search-bar {
+            position: absolute;
+            top: 70px; /* Ajusta según la posición del icono */
+            left: 70px; /* Ajusta para que aparezca junto al sidebar */
+            background-color: #3b4c6b;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column; /* Cambiado a columna para apilar elementos */
+            gap: 10px;
+            align-items: flex-start; /* Alinea los elementos a la izquierda */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 500;
+            width: 300px; /* Ancho fijo para la barra de búsqueda */
+        }
+
+        #search-bar.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #search-bar .input-group {
+            display: flex;
+            width: 100%;
+            gap: 5px;
+        }
+
+        #search-bar input {
+            background-color: #4a5a7a;
+            border: 1px solid #6b7c9e;
+            border-radius: 5px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 0.9em;
+            flex-grow: 1; /* Permite que el input ocupe el espacio disponible */
+        }
+
+        #search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #search-bar button {
+            background-color: #87CEEB;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: #1A2B42;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-weight: bold;
+        }
+
+        #search-bar button:hover {
+            background-color: #6CB5E0;
+        }
+        
+        /* Contenedor de Resultados de Búsqueda */
+        #search-results {
+            width: 100%;
+            max-height: 250px; /* Altura máxima para scroll */
+            overflow-y: auto; /* Habilitar scroll si los resultados son muchos */
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 10px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background-color: #4a5a7a;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: 2px solid transparent; /* Para el borde de seleccionado */
+        }
+
+        .search-result-item:hover {
+            background-color: #5b6fb5;
+        }
+
+        .search-result-item.selected {
+            border-color: #87CEEB; /* Color de resaltado para selección */
+            background-color: #5b6fb5;
+        }
+
+        .search-result-item img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 3px;
+            background-color: rgba(0,0,0,0.2);
+        }
+        /* Estilo específico para la miniatura de color en los resultados de búsqueda */
+        .search-result-item .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            flex-shrink: 0; /* Evita que el div se encoja */
+        }
+
+
+        .search-result-item span {
+            color: #fff;
+            font-size: 0.9em;
+            flex-grow: 1;
+        }
+
+        #select-searched-item-button {
+            width: 100%;
+            background-color: #28a745; /* Color verde para seleccionar */
+            margin-top: 10px;
+            display: none; /* Oculto por defecto, se muestra al seleccionar un item */
+        }
+        #select-searched-item-button:hover {
+            background-color: #218838;
+        }
+
+
+        /* Horario */
+        #schedule-popup .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        #schedule-popup .schedule-table th,
+        #schedule-popup .schedule-table td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        #schedule-popup .schedule-table th {
+            background-color: #4a5a7a;
+            color: #87CEEB;
+            font-weight: bold;
+        }
+
+        #schedule-popup .schedule-table td {
+            background-color: #3b4c6b;
+        }
+        
+        /* Pantalla Completa */
+        .fullscreen-active body,
+        .fullscreen-active .app-container,
+        .fullscreen-active .main-content,
+        .fullscreen-active .product-display {
+            width: 100vw !important;
+            height: 100vh !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        .fullscreen-active .sidebar-left,
+        .fullscreen-active .customization-panel,
+        .fullscreen-active .discord-floating,
+        .fullscreen-active .header-icons {
+            display: none !important;
+        }
+
+        .fullscreen-active .product-display img#mockup-img {
+            max-width: 100% !important;
+            max-height: 100% !important;
+            width: auto !important; /* Permitir que se ajuste si la relación de aspecto no es 100% */
+            height: auto !important;
+        }
+
+        /* Contact Footer */
+        .contact-footer {
+            background-color: #000000; /* Fondo oscuro */
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px; /* Separación del app-container */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-footer p {
+            font-size: 1.1em;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .contact-footer .social-links {
+            display: flex;
+            gap: 25px;
+        }
+
+        .contact-footer .social-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 36px; /* Tamaño más grande para los iconos */
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .contact-footer .social-links a:hover {
+            color: #007bff; /* Color de hover */
+            transform: translateY(-5px); /* Pequeño efecto al pasar el mouse */
+        }
+
+        /* --- Estilos para el popup de Compartir --- */
+        #share-popup .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        #share-popup .share-options .share-button {
+            display: flex;
+            align-items: center;
+            background-color: #3b4c6b;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.1em;
+        }
+
+        #share-popup .share-options .share-button:hover {
+            background-color: #4a5a7a;
+        }
+
+        #share-popup .share-options .share-button .material-icons {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+        /* Colores específicos para iconos de redes sociales */
+        .share-button.whatsapp .material-icons { color: #25D366; }
+        .share-button.facebook .material-icons { color: #1877F2; }
+        .share-button.twitter .material-icons { color: #1DA1F2; }
+        .share-button.linkedin .material-icons { color: #0A66C2; }
+        .share-button.email .material-icons { color: #FF4500; }
+        .share-button.copy .material-icons { color: #FFD700; }
+
+        .share-popup .share-note {
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.7);
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar-left">
+            <span class="material-icons icon" id="instructions-icon" title="Instrucciones">tune</span>
+            <span class="material-icons icon" id="search-icon" title="Buscar equipo">search</span>
+            <span class="material-icons icon" id="schedule-icon" title="Ver horario">history</span>
+            <span class="material-icons icon" id="screenshot-icon" title="Tomar captura">camera_alt</span>
+            <span class="material-icons icon" id="fullscreen-icon" title="Pantalla completa">fullscreen</span>
+            <span class="material-icons icon" id="video-icon" title="Grabar procedimiento">play_arrow</span>
+        </div>
+
+        <div class="main-content">
+            <div class="product-display">
+                <img src="https://i.imgur.com/IJvad28.png" alt="Diseño de Camiseta" id="mockup-img">
+                <div class="placeholder-text" style="display:none;">
+                    <p>¡Aquí se renderizaría tu diseño 3D!</p>
+                    <small>(Esta es una imagen placeholder)</small>
+                </div>
+                <div id="camiseta-texto-superpuesto">NOMBRE</div>
+                <div id="camiseta-numero-superpuesto"></div>
+                <img id="camiseta-logo-superpuesto" src="" alt="Logo superpuesto">
+            </div>
+
+            <div class="customization-panel">
+                <div class="panel-header">
+                    <h2>Diseñador de Camisetas</h2>
+                    <div class="header-icons">
+                        <i class="material-icons" id="favorite-icon">favorite_border</i>
+                        <span class="favorite-count" id="favorite-count">0</span>
+                        <i class="material-icons" id="share-icon" title="Compartir diseño">share</i>
+                        <i class="material-icons" id="download-button" title="Descargar diseño">file_download</i>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab-button active" data-tab="design">Diseño</div>
+                    <div class="tab-button" data-tab="colors">Colores</div>
+                    <div class="tab-button" data-tab="text">Texto</div>
+                    <div class="tab-button" data-tab="logo">Logo</div>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="design">
+                        <div class="design-upload-section">
+                            <h3>Sube Tu Propio Diseño</h3>
+                            <input type="file" id="upload-design-input" accept="image/*">
+                            <button class="upload-button" id="select-design-file-button">Seleccionar Archivo de Diseño</button>
+                        </div>
+                        <h3>Elige un Diseño de la Galería</h3>
+                        <div class="design-grid">
+                            <div class="design-item selected" data-img="https://i.imgur.com/IJvad28.png">
+                                <img src="https://i.imgur.com/IJvad28.png" alt="Camiseta Blanca Predeterminada">
+                                <p>Camiseta Blanca Predeterminada</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/3jhd2ZA.png">
+                                <img src="https://i.imgur.com/3jhd2ZA.png" alt="Diseño New Camp - Fútbol/Verde">
+                                <p>Diseño New Camp - Fútbol/Verde</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/oqdd3oB.png">
+                                <img src="https://i.imgur.com/oqdd3oB.png" alt="Diseño City - Azul">
+                                <p>Diseño City - Azul</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/ZVeJfNN.png">
+                                <img src="https://i.imgur.com/ZVeJfNN.png" alt="Diseño Revo - Amarillo">
+                                <p>Diseño Revo - Amarillo</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/38f122G.png">
+                                <img src="https://i.imgur.com/38f122G.png" alt="Diseño Style - Púrpura">
+                                <p>Diseño Style - Púrpura</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/4QiEFKo.png">
+                                <img src="https://i.imgur.com/4QiEFKo.png" alt="Diseño Monaco - Magenta">
+                                <p>Diseño Monaco - Magenta</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/RTmANBj.png">
+                                <img src="https://i.imgur.com/RTmANBj.png" alt="Diseño azul-negro">
+                                <p>Diseño azul-negro</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/yyQyXkU.png">
+                                <img src="https://i.imgur.com/yyQyXkU.png" alt="Diseño Gladiator - Naranja">
+                                <p>Diseño Gladiator - Naranja</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/eEJLEmf.png">
+                                <img src="https://i.imgur.com/eEJLEmf.png" alt="Diseño de rayas-azul-amarillo">
+                                <p>Diseño de rayas-azul-amarillo</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/84nW6Fv.png">
+                                <img src="https://i.imgur.com/84nW6Fv.png" alt="Diseño Spandex - Púrpura Oscuro">
+                                <p>Diseño Spandex - Púrpura Oscuro</p>
+                            </div>
+                            <div class="design-item" data-img="https://i.imgur.com/4QXSIvD.png">
+                                <img src="https://i.imgur.com/4QXSIvD.png" alt="Diseño Avia - Azul Acero">
+                                <p>Diseño Avia - Azul Acero</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="colors">
+                        <h3>Selecciona un Color o Degradado</h3>
+                        <div class="color-grid">
+                            <div class="color-item" data-color="linear-gradient(to right, #FF0000, #FFFF00)">
+                                <div style="width:50px;height:50px; background:linear-gradient(to right, #FF0000, #FFFF00); border-radius:50%; border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Rojo-Amarillo</p>
+                            </div>
+                            <div class="color-item" data-color="linear-gradient(to bottom, #007bff, #00C6FF)">
+                                <div style="width:50px;height:50px; background:linear-gradient(to bottom, #007bff, #00C6FF); border-radius:50%; border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Azul Celeste</p>
+                            </div>
+                            <div class="color-item" data-color="linear-gradient(to right, #00FF00, #008000)">
+                                <div style="width:50px;height:50px; background:linear-gradient(to right, #00FF00, #008000); border-radius:50%; border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Verde Claro-Oscuro</p>
+                            </div>
+                            <div class="color-item" data-color="#FFFFFF">
+                                <div style="width:50px;height:50px; background-color:#FFFFFF; border-radius:50%; border: 1px solid rgba(0,0,0,0.5);"></div>
+                                <p>Blanco Puro</p>
+                            </div>
+                            <div class="color-item" data-color="#000000">
+                                <div style="width:50px;height:50px; background-color:#000000; border-radius:50%; border: 1px solid rgba(255,255,255,0.5);"></div>
+                                <p>Negro Intenso</p>
+                            </div>
+                            <div class="color-item" data-color="linear-gradient(90deg, #FF6B6B 0%, #FFD166 25%, #06D6A0 50%, #118AB2 75%, #073B4C 100%)">
+                                <div style="width:50px;height:50px; background:linear-gradient(90deg, #FF6B6B 0%, #FFD166 25%, #06D6A0 50%, #118AB2 75%, #073B4C 100%); border-radius:50%;border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Arcoíris</p>
+                            </div>
+                            <div class="color-item" data-color="repeating-linear-gradient(45deg, #f06, #f06 10px, #0cf 10px, #0cf 20px)">
+                                <div style="width:50px;height:50px; background:repeating-linear-gradient(45deg, #f06, #f06 10px, #0cf 10px, #0cf 20px); border-radius:50%;border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Franjas Diagonal</p>
+                            </div>
+                            <div class="color-item" data-color="linear-gradient(to right, #1A1A2E, #0F0F1A)">
+                                <div style="width:50px;height:50px; background:linear-gradient(to right, #1A1A2E, #0F0F1A); border-radius:50%; border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Gris Noche</p>
+                            </div>
+                            <div class="color-item" data-color="linear-gradient(to top, #0A192F, #001F3F)">
+                                <div style="width:50px;height:50px; background:linear-gradient(to top, #0A192F, #001F3F); border-radius:50%; border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Azul Profundo</p>
+                            </div>
+                            <div class="color-item" data-color="linear-gradient(45deg, #2C3E50, #4A637C)">
+                                <div style="width:50px;height:50px; background:linear-gradient(45deg, #2C3E50, #4A637C); border-radius:50%; border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Gris Pizarra</p>
+                            </div>
+                            <div class="color-item" data-color="linear-gradient(to left, #360101, #6b0504)">
+                                <div style="width:50px;height:50px; background:linear-gradient(to left, #360101, #6b0504); border-radius:50%; border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Rojo Oscuro</p>
+                            </div>
+                            <div class="color-item" data-color="repeating-linear-gradient(0deg, #1C2A39, #1C2A39 10px, #2A3B4C 10px, #2A3B4C 20px)">
+                                <div style="width:50px;height:50px; background:repeating-linear-gradient(0deg, #1C2A39, #1C2A39 10px, #2A3B4C 10px, #2A3B4C 20px); border-radius:50%;border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Franjas Verticales</p>
+                            </div>
+                            <div class="color-item" data-color="repeating-linear-gradient(90deg, #4B0082, #4B0082 10px, #9932CC 10px, #9932CC 20px)">
+                                <div style="width:50px;height:50px; background:repeating-linear-gradient(90deg, #4B0082, #4B0082 10px, #9932CC 10px, #9932CC 20px); border-radius:50%;border: 1px solid rgba(255,255,255,0.3);"></div>
+                                <p>Franjas Horizontales</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="text">
+                        <div class="text-controls">
+                            <h3>Escribe tu Texto</h3>
+                            <input type="text" id="input-camiseta-texto" placeholder="Escribe aquí..." value="NOMBRE">
+                            
+                            <h3>Fuente</h3>
+                            <select id="select-fuente-texto">
+                                <option value="Arial, sans-serif">Arial</option>
+                                <option value="Verdana, sans-serif">Verdana</option>
+                                <option value="Georgia, serif">Georgia</option>
+                                <option value="Palatino Linotype, Palatino, serif">Palatino</option>
+                                <option value="'Roboto', sans-serif">Roboto</option>
+                                <option value="'Lato', sans-serif">Lato</option>
+                                <option value="'Open Sans', sans-serif">Open Sans</option>
+                                <option value="'Impact', sans-serif">Impact</option>
+                            </select>
+
+                            <h3>Color del Texto</h3>
+                            <input type="color" id="input-color-texto" value="#FFFFFF">
+                            
+                            <h3>Tamaño del Texto</h3>
+                            <input type="range" id="range-tamano-texto" min="20" max="80" value="40">
+
+                            <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+
+                            <h3>Número de Jugador</h3>
+                            <input type="number" id="input-numero-jugador" placeholder="Ej: 10" min="0" max="99">
+                            
+                            <h3>Color del Número</h3>
+                            <input type="color" id="input-color-numero" value="#FFD700">
+                            
+                            <h3>Tamaño del Número</h3>
+                            <input type="range" id="range-tamano-numero" min="40" max="120" value="60">
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="logo">
+                        <h3>Sube tu Propio Logo</h3>
+                        <input type="file" id="upload-logo-input" accept="image/*">
+                        <button class="upload-button" id="select-logo-file-button">Seleccionar Logo del Equipo</button>
+
+                        <h3>O elige un Logo de la Galería</h3>
+                        <div class="logo-grid">
+                            <div class="logo-item" data-logo="https://via.placeholder.com/100x100/FF0000/FFFFFF?text=Per%C3%BA">
+                                <img src="https://i.imgur.com/Yljj7k3.png" alt="Bandera Perú">
+                                <p>Bandera Peru</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://i.pinimg.com/736x/90/ea/e6/90eae60858767357946f165ddcf9f0fe.jpg">
+                                <img src="https://i.pinimg.com/736x/90/ea/e6/90eae60858767357946f165ddcf9f0fe.jpg" alt="Bandera Argentina">
+                                <p>Bandera argentina</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://static5.depositphotos.com/1048784/510/v/950/depositphotos_5100556-stock-illustration-brazil-flag-icon.jpg">
+                                <img src="https://static5.depositphotos.com/1048784/510/v/950/depositphotos_5100556-stock-illustration-brazil-flag-icon.jpg" alt="Bandera Brasil">
+                                <p>Bandera Brazil</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://c0.klipartz.com/pngpicture/942/256/gratis-png-logotipo-de-la-cabeza-de-leon-rugido-de-leon-rugido.png">
+                                <img src="https://c0.klipartz.com/pngpicture/942/256/gratis-png-logotipo-de-la-cabeza-de-leon-rugido-de-leon-rugido.png" alt="León">
+                                <p>Leon</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://img.freepik.com/vector-premium/logotipo-cabeza-aguila_8043-1303.jpg">
+                                <img src="https://img.freepik.com/vector-premium/logotipo-cabeza-aguila_8043-1303.jpg" alt="Águila">
+                                <p>Aguila</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://w7.pngwing.com/pngs/1008/532/png-transparent-wolf-logo-symbol.png">
+                                <img src="https://w7.pngwing.com/pngs/1008/532/png-transparent-wolf-logo-symbol.png" alt="Lobo">
+                                <p>Lobo</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://c0.klipartz.com/pngpicture/854/678/gratis-png-balon-de-futbol.png">
+                                <img src="https://c0.klipartz.com/pngpicture/854/678/gratis-png-balon-de-futbol.png" alt="Escudo Fútbol">
+                                <p>Futbol clasico</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://c3.klipartz.com/pngpicture/122/100/sticker-png-heroes-del-cenepa-insignia.png">
+                                <img src="https://c3.klipartz.com/pngpicture/122/100/sticker-png-heroes-del-cenepa-insignia.png" alt="Escudo Universidad">
+                                <p>Escuela</p>
+                            </div>
+                            <div class="logo-item" data-logo="https://w7.pngwing.com/pngs/708/552/png-transparent-a-c-milan-primavera-inter-milan-serie-a-a-c-milan-trademark-team-logo-thumbnail.png">
+                                <img src="https://w7.pngwing.com/pngs/708/552/png-transparent-a-c-milan-primavera-inter-milan-serie-a-a-c-milan-trademark-team-logo-thumbnail.png" alt="Escudo Deporte">
+                                <p>Deportivo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="discord-floating">
+        <i class="material-icons">chat</i>
+    </div>
+
+    <div class="overlay" id="instructions-overlay">
+        <div class="popup">
+            <button class="close-btn">&times;</button>
+            <h3>Guía de Uso del Diseñador</h3>
+            <p>Bienvenido al diseñador de camisetas. Aquí te explicamos cómo usarlo:</p>
+            <ul>
+                <li>**Pestaña Diseño:** Selecciona una camiseta base de la galería o sube tu propia imagen de camiseta para empezar a personalizarla.</li>
+                <li>**Pestaña Colores:** Elige un color sólido o un degradado para la base de tu camiseta. Haz clic en la camiseta del centro para aplicar el color seleccionado.</li>
+                <li>**Pestaña Texto:** Añade texto personalizado y un número de jugador. Puedes cambiar la fuente, el color y el tamaño de ambos.</li>
+                <li>**Pestaña Logo:** Sube tu propio logo o selecciona uno de nuestra colección.</li>
+                <li>**Arrastrar y Soltar:** Puedes arrastrar el texto, número y logo directamente sobre la camiseta para posicionarlos.</li>
+                <li>**Guardar/Comprar:** Utiliza los botones de la parte inferior para guardar tu diseño o añadirlo al carrito.</li>
+            </ul>
+            <p>¡Explora y diviértete creando tu camiseta única!</p>
+        </div>
+    </div>
+
+    <div id="search-bar">
+        <div class="input-group">
+            <input type="text" id="item-search-input" placeholder="Busca...">
+            <button id="search-button">Buscar</button>
+        </div>
+        <div id="search-results">
+            </div>
+        <button id="select-searched-item-button">Seleccionar</button>
+    </div>
+
+    <div class="overlay" id="schedule-overlay">
+        <div class="popup" id="schedule-popup">
+            <button class="close-btn">&times;</button>
+            <h3>Horario de Atención</h3>
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Horario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Lunes</td><td>9:00 AM - 6:00 PM</td></tr>
+                    <tr><td>Martes</td><td>9:00 AM - 6:00 PM</td></tr>
+                    <tr><td>Miércoles</td><td>9:00 AM - 6:00 PM</td></tr>
+                    <tr><td>Jueves</td><td>9:00 AM - 6:00 PM</td></tr>
+                    <tr><td>Viernes</td><td>9:00 AM - 5:00 PM</td></tr>
+                    <tr><td>Sábado</td><td>10:00 AM - 2:00 PM</td></tr>
+                    <tr><td>Domingo</td><td>Cerrado</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 15px; text-align: center; font-size: 0.85em; color: rgba(255,255,255,0.7);">¡Contáctanos para citas especiales!</p>
+        </div>
+    </div>
+
+    <div class="overlay" id="share-overlay">
+        <div class="popup" id="share-popup">
+            <button class="close-btn">&times;</button>
+            <h3>Compartir tu Diseño</h3>
+            <p>Elige cómo quieres compartir tu increíble camiseta:</p>
+            <div class="share-options">
+                </div>
+            <p class="share-note">¡Comparte tu creatividad con tus amigos y familiares!</p>
+        </div>
+    </div>
+
+    <footer class="contact-footer">
+        <p>Contáctanos con el siguiente Número: 992149724 ¡Esperamos su modelo! &#128522; &#128071;</p>
+        <div class="social-links">
+            <a href="https://www.instagram.com/your_instagram_page" target="_blank" title="Instagram">
+                <span class="material-icons">photo_camera</span>
+            </a>
+            <a href="https://www.tiktok.com/@your_tiktok_page" target="_blank" title="TikTok">
+                <span class="material-icons">videocam</span>
+            </a>
+            <a href="https://www.facebook.com/your_facebook_page" target="_blank" title="Facebook">
+                <span class="material-icons">group</span>
+            </a>
+            <a href="https://wa.me/51992149724" target="_blank" title="WhatsApp">
+                <span class="material-icons">chat</span>
+            </a>
+        </div>
+    </footer>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            const mockupImg = document.getElementById('mockup-img');
+            const camisetaTextoSuperpuesto = document.getElementById('camiseta-texto-superpuesto');
+            const camisetaNumeroSuperpuesto = document.getElementById('camiseta-numero-superpuesto');
+            const camisetaLogoSuperpuesto = document.getElementById('camiseta-logo-superpuesto');
+            const placeholderText = document.querySelector('.placeholder-text');
+            const productDisplay = document.querySelector('.product-display');
+
+            // --- Funcionalidad General de Pestañas ---
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                    button.classList.add('active');
+                    const targetTab = button.dataset.tab;
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+
+            // --- 1. Funcionalidad del Corazón (Favoritos) ---
+            const favoriteIcon = document.getElementById('favorite-icon');
+            const favoriteCount = document.getElementById('favorite-count');
+            let clicksCount = 0;
+
+            if (favoriteIcon) {
+                favoriteIcon.addEventListener('click', () => {
+                    clicksCount++;
+                    favoriteCount.textContent = clicksCount;
+                });
+            }
+
+            // --- 2. Funcionalidad de la Pestaña "Diseño" (Cambio de Imagen de Camiseta y Subida de Diseño) ---
+            const designItems = document.querySelectorAll('.design-item');
+            const uploadDesignInput = document.getElementById('upload-design-input');
+            const selectDesignFileButton = document.getElementById('select-design-file-button');
+
+            if (selectDesignFileButton) {
+                selectDesignFileButton.addEventListener('click', () => {
+                    uploadDesignInput.click();
+                });
+            }
+
+            if (uploadDesignInput) {
+                uploadDesignInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            mockupImg.src = e.target.result;
+                            if (placeholderText) placeholderText.style.display = 'none';
+                            designItems.forEach(di => di.classList.remove('selected'));
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            designItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    designItems.forEach(di => di.classList.remove('selected'));
+                    item.classList.add('selected');
+                    const newImgSrc = item.dataset.img;
+                    mockupImg.src = newImgSrc;
+                    if (placeholderText) placeholderText.style.display = 'none';
+                    if (uploadDesignInput) uploadDesignInput.value = '';
+                });
+            });
+
+            // --- 3. Funcionalidad de la Pestaña "Colores" ---
+            const colorItems = document.querySelectorAll('.color-item');
+            let colorOverlay = document.getElementById('color-overlay');
+            if (!colorOverlay) {
+                colorOverlay = document.createElement('div');
+                colorOverlay.id = 'color-overlay';
+                colorOverlay.style.position = 'absolute';
+                colorOverlay.style.top = '0';
+                colorOverlay.style.left = '0';
+                colorOverlay.style.width = '100%';
+                colorOverlay.style.height = '100%';
+                colorOverlay.style.opacity = '0.4';
+                colorOverlay.style.zIndex = '5';
+                if (productDisplay) {
+                    productDisplay.appendChild(colorOverlay);
+                }
+            }
+
+            colorItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    colorItems.forEach(ci => ci.classList.remove('selected'));
+                    item.classList.add('selected');
+
+                    const newBackgroundColor = item.dataset.color;
+                    
+                    if (newBackgroundColor.startsWith('linear-gradient') || newBackgroundColor.startsWith('repeating-linear-gradient')) {
+                        colorOverlay.style.background = newBackgroundColor;
+                    } else {
+                        colorOverlay.style.backgroundColor = newBackgroundColor;
+                        colorOverlay.style.backgroundImage = 'none';
+                    }
+                });
+            });
+
+
+            // --- 4. Funcionalidad de la Pestaña "Texto" (Texto y Número de Jugador) ---
+            const inputTextCamiseta = document.getElementById('input-camiseta-texto');
+            const selectFuenteTexto = document.getElementById('select-fuente-texto');
+            const inputColorTexto = document.getElementById('input-color-texto');
+            const rangeTamanoTexto = document.getElementById('range-tamano-texto');
+
+            const inputNumeroJugador = document.getElementById('input-numero-jugador');
+            const inputColorNumero = document.getElementById('input-color-numero');
+            const rangeTamanoNumero = document.getElementById('range-tamano-numero');
+
+            function updateCamisetaText() {
+                if (camisetaTextoSuperpuesto) {
+                    camisetaTextoSuperpuesto.textContent = inputTextCamiseta.value || "";
+                    camisetaTextoSuperpuesto.style.fontFamily = selectFuenteTexto.value;
+                    camisetaTextoSuperpuesto.style.color = inputColorTexto.value;
+                    camisetaTextoSuperpuesto.style.fontSize = rangeTamanoTexto.value + 'px';
+                }
+            }
+
+            function updateCamisetaNumero() {
+                if (camisetaNumeroSuperpuesto) {
+                    const numero = inputNumeroJugador.value;
+                    if (numero) {
+                        camisetaNumeroSuperpuesto.textContent = numero;
+                        camisetaNumeroSuperpuesto.style.color = inputColorNumero.value;
+                        camisetaNumeroSuperpuesto.style.fontSize = rangeTamanoNumero.value + 'px';
+                        camisetaNumeroSuperpuesto.style.display = 'block';
+                    } else {
+                        camisetaNumeroSuperpuesto.style.display = 'none';
+                    }
+                }
+            }
+
+            if (inputTextCamiseta) inputTextCamiseta.addEventListener('input', updateCamisetaText);
+            if (selectFuenteTexto) selectFuenteTexto.addEventListener('change', updateCamisetaText);
+            if (inputColorTexto) inputColorTexto.addEventListener('input', updateCamisetaText);
+            if (rangeTamanoTexto) rangeTamanoTexto.addEventListener('input', updateCamisetaText);
+
+            if (inputNumeroJugador) inputNumeroJugador.addEventListener('input', updateCamisetaNumero);
+            if (inputColorNumero) inputColorNumero.addEventListener('input', updateCamisetaNumero);
+            if (rangeTamanoNumero) rangeTamanoNumero.addEventListener('input', updateCamisetaNumero);
+
+            // Llamada inicial para asegurar que el texto y número se muestren correctamente al cargar
+            updateCamisetaText();
+            updateCamisetaNumero();
+
+            // --- 5. Funcionalidad de la Pestaña "Logo" ---
+            const uploadLogoInput = document.getElementById('upload-logo-input');
+            const selectLogoFileButton = document.getElementById('select-logo-file-button');
+            const logoItems = document.querySelectorAll('.logo-item');
+
+            if (selectLogoFileButton) {
+                selectLogoFileButton.addEventListener('click', () => {
+                    uploadLogoInput.click();
+                });
+            }
+
+            if (uploadLogoInput) {
+                uploadLogoInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            camisetaLogoSuperpuesto.src = e.target.result;
+                            camisetaLogoSuperpuesto.style.display = 'block';
+                            logoItems.forEach(li => li.classList.remove('selected'));
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        camisetaLogoSuperpuesto.style.display = 'none';
+                    }
+                });
+            }
+
+            logoItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    logoItems.forEach(li => li.classList.remove('selected'));
+                    item.classList.add('selected');
+                    const newLogoSrc = item.dataset.logo;
+                    camisetaLogoSuperpuesto.src = newLogoSrc;
+                    camisetaLogoSuperpuesto.style.display = 'block';
+                    if (uploadLogoInput) uploadLogoInput.value = '';
+                });
+            });
+
+            // --- Funcionalidad de Arrastrar y Soltar (Drag and Drop) para Texto, Número y Logo ---
+            function makeDraggable(element) {
+                let isDragging = false;
+                let offset = { x: 0, y: 0 };
+
+                if (!element) return; // Asegúrate de que el elemento exista
+
+                element.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    // Calcula el offset inicial entre el puntero y el centro del elemento
+                    const rect = element.getBoundingClientRect();
+                    offset.x = e.clientX - (rect.left + rect.width / 2);
+                    offset.y = e.clientY - (rect.top + rect.height / 2);
+                    element.style.cursor = 'grabbing'; // Cambia el cursor a "agarrando"
+                });
+
+                productDisplay.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+
+                    const productDisplayRect = productDisplay.getBoundingClientRect();
+                    
+                    // Calcula la posición del centro del elemento respecto al product-display
+                    let newCenterX = e.clientX - offset.x - productDisplayRect.left;
+                    let newCenterY = e.clientY - offset.y - productDisplayRect.top;
+
+                    // Limita el arrastre dentro de los límites del product-display
+                    const elemWidth = element.offsetWidth;
+                    const elemHeight = element.offsetHeight;
+
+                    // Ajusta newCenterX y newCenterY para que sean las coordenadas de la esquina superior izquierda
+                    // Ya que transform: translate(-50%, -50%) hace que top/left sean el centro
+                    const newLeft = newCenterX - elemWidth / 2;
+                    const newTop = newCenterY - elemHeight / 2;
+                    // Calcula los límites en coordenadas de la esquina superior izquierda
+                    const minLeft = 0;
+                    const maxLeft = productDisplayRect.width - elemWidth;
+                    const minTop = 0;
+                    const maxTop = productDisplayRect.height - elemHeight;
+                    // Aplica los límites
+                    let finalLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+                    let finalTop = Math.max(minTop, Math.min(newTop, maxTop));
+                    
+                    // Convertir a porcentajes relativos al product-display
+                    element.style.left = ((finalLeft + elemWidth / 2) / productDisplayRect.width * 100) + '%';
+                    element.style.top = ((finalTop + elemHeight / 2) / productDisplayRect.height * 100) + '%';
+                    // Mantener el translate(-50%, -50%) para centrarlo si las dimensiones del elemento cambian
+                    element.style.transform = 'translate(-50%, -50%)';
+                });
+
+                productDisplay.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    element.style.cursor = 'grab';
+                });
+                // También manejar el caso cuando el mouse sale de la ventana del navegador mientras se arrastra
+                document.body.addEventListener('mouseleave', () => {
+                    isDragging = false;
+                    if (element) element.style.cursor = 'grab'; // Asegúrate de que el elemento aún exista
+                });
+            }
+
+            makeDraggable(camisetaTextoSuperpuesto);
+            makeDraggable(camisetaNumeroSuperpuesto);
+            makeDraggable(camisetaLogoSuperpuesto);
+
+
+            // Ocultar placeholder si hay una imagen inicial
+            if (mockupImg && mockupImg.src && mockupImg.src !== window.location.href) {
+                if (placeholderText) placeholderText.style.display = 'none';
+            }
+
+            // ===============================================
+            // --- NUEVAS FUNCIONALIDADES PARA LOS ICONOS ---
+            // ===============================================
+
+            // Icono 1: Instrucciones (tune)
+            const instructionsIcon = document.getElementById('instructions-icon');
+            const instructionsOverlay = document.getElementById('instructions-overlay');
+            const instructionsCloseBtn = instructionsOverlay.querySelector('.close-btn');
+
+            if (instructionsIcon) {
+                instructionsIcon.addEventListener('click', () => {
+                    instructionsOverlay.classList.add('active');
+                });
+            }
+            if (instructionsCloseBtn) {
+                instructionsCloseBtn.addEventListener('click', () => {
+                    instructionsOverlay.classList.remove('active');
+                });
+            }
+            if (instructionsOverlay) {
+                instructionsOverlay.addEventListener('click', (e) => {
+                    if (e.target === instructionsOverlay) {
+                        instructionsOverlay.classList.remove('active');
+                    }
+                });
+            }
+
+            // Icono 2: Búsqueda (search)
+            const searchIcon = document.getElementById('search-icon');
+            const searchBar = document.getElementById('search-bar');
+            const itemSearchInput = document.getElementById('item-search-input'); // Renombrado de team-search-input
+            const searchButton = document.getElementById('search-button');
+            const searchResultsContainer = document.getElementById('search-results');
+            const selectSearchedItemButton = document.getElementById('select-searched-item-button');
+            let isSearchBarActive = false;
+            let selectedSearchItem = null; // Para guardar el item seleccionado
+
+            // Datos de ejemplo para la búsqueda de equipos/logos/personajes/etc.
+            const searchableItems = [
+                // Equipos/Logos (ya existentes)
+                { name: 'FC Barcelona Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/FC_Barcelona_logo.svg/1200px-FC_Barcelona_logo.svg.png' },
+                { name: 'Real Madrid CF Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/1200px-Real_Madrid_CF.svg.png' },
+                { name: 'Manchester United Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/Manchester_United_FC_crest.svg/1200px-Manchester_United_FC_crest.svg.png' },
+                { name: 'Bayern Munich Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg/1200px-FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg.png' },
+                { name: 'Juventus FC Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Juventus_FC_2017_logo.svg/1200px-Juventus_FC_2017_logo.svg.png' },
+                { name: 'Liverpool FC Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Liverpool_FC.svg/1200px-Liverpool_FC.svg.png' },
+                { name: 'Paris Saint-Germain Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Paris_Saint-Germain_F.C._logo.svg/1200px-Paris_Saint-Germain_F.C._logo.svg.png' },
+                { name: 'AC Milan Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Logo_AC_Milan.svg/1200px-Logo_AC_Milan.svg.png' },
+                { name: 'Inter Milan Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/FC_Internazionale_Milano_2021.svg/1200px-FC_Internazionale_Milano_2021.svg.png' },
+                { name: 'Borussia Dortmund Logo', type: 'logo', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/1200px-Borussia_Dortmund_logo.svg.png' },
+
+                // Personajes
+                { name: 'Mickey Mouse', type: 'character', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c6/Mickey_Mouse.png/220px-Mickey_Mouse.png' },
+                { name: 'Bugs Bunny', type: 'character', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/1/17/Bugs_Bunny.svg/200px-Bugs_Bunny.svg.png' },
+                { name: 'Mario Bros', type: 'character', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Mario_character.png/220px-Mario_character.png' },
+                { name: 'Pikachu', type: 'character', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/Pikachu_original_artwork.png/220px-Pikachu_original_artwork.png' },
+                
+                // Superhéroes (Marvel específicos)
+                { name: 'Iron Man Logo', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Iron_Man_logo.svg/1200px-Iron_Man_logo.svg.png' },
+                { name: 'Captain America Shield', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Captain_America_Shield.svg/1200px-Captain_America_Shield.svg.png' },
+                { name: 'Thor Hammer (Mjolnir)', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Mjolnir.svg/1200px-Mjolnir.svg.png' },
+                { name: 'Hulk Fist', type: 'superhero', value: 'https://i.imgur.com/example-hulk-fist.png' }, // Placeholder, idealmente una imagen real
+                { name: 'Black Widow Logo', type: 'superhero', value: 'https://i.imgur.com/example-black-widow.png' }, // Placeholder, idealmente una imagen real
+                { name: 'Spider-Man Mask', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/Spider-Man_logo.svg/1200px-Spider-Man_logo.svg.png' }, // Ya estaba, pero lo especifico como Marvel
+                { name: 'Wolverine Claws', type: 'superhero', value: 'https://i.imgur.com/example-wolverine-claws.png' }, // Placeholder
+                { name: 'Avengers Logo', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Avengers_Logo.svg/1200px-Avengers_Logo.svg.png' },
+                { name: 'Superman Logo', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Superman_logo.svg/1200px-Superman_logo.svg.png' }, // Mantengo DC para variedad
+                { name: 'Batman Logo', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Batman_logo.svg/1200px-Batman_logo.svg.png' }, // Mantengo DC para variedad
+                { name: 'Wonder Woman Logo', type: 'superhero', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Wonder_Woman_logo.svg/1200px-Wonder_Woman_logo.svg.png' }, // Mantengo DC para variedad
+
+                // Jugadores (Ejemplos, idealmente serían fotos o caricaturas)
+                { name: 'Lionel Messi', type: 'player', value: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/Lionel_Messi_Copa_Am%C3%A9rica_2024.png' },
+                { name: 'Cristiano Ronaldo', type: 'player', value: 'https://upload.wikimedia.org/wikipedia/commons/2/23/Cristiano_Ronaldo_2018.jpg' },
+                { name: 'LeBron James', type: 'player', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/LeBron_James_Photo_by_Glenn_Francis.jpg/220px-LeBron_James_Photo_by_Glenn_Francis.jpg' },
+
+                // Pelotas
+                { name: 'Balón de Fútbol', type: 'ball', value: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/Soccerball.svg' },
+                { name: 'Balón de Baloncesto', type: 'ball', value: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/Basketball.png' },
+                { name: 'Pelota de Tenis', type: 'ball', value: 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Tennis_ball_icon.svg' },
+                { name: 'Pelota de Vóley', type: 'ball', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Volleyball.svg/1200px-Volleyball.svg.png' },
+
+
+                // Camisetas de Colores Diferentes (usaremos IMÁGENES de camisetas de colores)
+                { name: 'Camiseta Azul Sencilla', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/0000FF/FFFFFF?text=Camiseta+Azul' },
+                { name: 'Camiseta Roja Básica', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FF0000/000000?text=Camiseta+Roja' },
+                { name: 'Camiseta Verde Brillante', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/00FF00/000000?text=Camiseta+Verde' },
+                { name: 'Camiseta Amarilla Deportiva', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FFFF00/000000?text=Camiseta+Amarilla' },
+                { name: 'Camiseta Negra Casual', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/000000/FFFFFF?text=Camiseta+Negra' },
+                { name: 'Camiseta Blanca Lisa', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FFFFFF/000000?text=Camiseta+Blanca' },
+                { name: 'Camiseta Naranja Vibrante', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FFA500/000000?text=Camiseta+Naranja' },
+                { name: 'Camiseta Morada Clásica', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/800080/FFFFFF?text=Camiseta+Morada' },
+                { name: 'Camiseta Gris Oscuro', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/505050/FFFFFF?text=Camiseta+Gris' },
+                { name: 'Camiseta Rosa Suave', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FFC0CB/000000?text=Camiseta+Rosa' },
+                { name: 'Camiseta Cian Eléctrico', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/00FFFF/000000?text=Camiseta+Cian' },
+                { name: 'Camiseta Marrón Tierra', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/A52A2A/FFFFFF?text=Camiseta+Marr%C3%B3n' },
+                { name: 'Camiseta Beige Natural', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/F5F5DC/000000?text=Camiseta+Beige' },
+                { name: 'Camiseta Verde Lima', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/32CD32/000000?text=Camiseta+Verde+Lima' },
+                { name: 'Camiseta Burdeos Elegante', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/800020/FFFFFF?text=Camiseta+Burdeos' },
+                { name: 'Camiseta Turquesa Vibrante', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/40E0D0/000000?text=Camiseta+Turquesa' },
+                { name: 'Camiseta Coral Brillante', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FF7F50/000000?text=Camiseta+Coral' },
+                
+                // Nuevos colores solicitados
+                { name: 'Camiseta Verde Oliva', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/6B8E23/FFFFFF?text=Camiseta+Verde+Oliva' },
+                { name: 'Camiseta Verde Menta', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/3EB489/000000?text=Camiseta+Verde+Menta' },
+                { name: 'Camiseta Lavanda', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/B57EDC/000000?text=Camiseta+Lavanda' },
+                { name: 'Camiseta Magenta', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FF00FF/000000?text=Camiseta+Magenta' },
+                { name: 'Camiseta Salmón', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FA8072/000000?text=Camiseta+Salm%C3%B3n' },
+                { name: 'Camiseta Rosado', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FFC0CB/000000?text=Camiseta+Rosado' },
+                { name: 'Camiseta Verde Oscuro', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/006400/FFFFFF?text=Camiseta+Verde+Oscuro' },
+                { name: 'Camiseta Oliva', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/808000/FFFFFF?text=Camiseta+Oliva' },
+                { name: 'Camiseta Lila', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/C8A2C8/000000?text=Camiseta+Lila' },
+                { name: 'Camiseta Amarillo Pálido', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FFFACD/000000?text=Camiseta+Amarillo+P%C3%A1lido' },
+                { name: 'Camiseta Fucsia', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FF00FF/000000?text=Camiseta+Fucsia' },
+                { name: 'Camiseta Mostaza', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/FFDB58/000000?text=Camiseta+Mostaza' },
+                { name: 'Camiseta Ocre', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/CC7722/FFFFFF?text=Camiseta+Ocre' },
+                { name: 'Camiseta Trullo', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/008080/FFFFFF?text=Camiseta+Trullo' },
+                { name: 'Camiseta Malva', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/993366/FFFFFF?text=Camiseta+Malva' },
+                { name: 'Camiseta Púrpura Oscuro', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/4B0082/FFFFFF?text=Camiseta+P%C3%BArpura+Oscuro' },
+                { name: 'Camiseta Verde Claro', type: 'design_shirt', value: 'https://via.placeholder.com/400x400/90EE90/000000?text=Camiseta+Verde+Claro' },
+            ];
+
+            function displaySearchResults(searchTerm) {
+                searchResultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+                selectSearchedItemButton.style.display = 'none'; // Ocultar botón de seleccionar
+                selectedSearchItem = null; // Resetear selección
+
+                const filteredResults = searchableItems.filter(item =>
+                    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+
+                if (filteredResults.length > 0) {
+                    filteredResults.forEach(item => {
+                        const resultItem = document.createElement('div');
+                        resultItem.classList.add('search-result-item');
+                        
+                        // Guardar todos los datos del item para su posterior uso
+                        resultItem.dataset.name = item.name;
+                        resultItem.dataset.type = item.type;
+                        resultItem.dataset.value = item.value;
+
+                        // Para camisetas de diseño, el thumbnail es la misma imagen de la camiseta
+                        // Para otros items, usamos la imagen de su valor
+                        const img = document.createElement('img');
+                        img.src = item.value; // El valor es siempre la URL de la imagen ahora
+                        img.alt = item.name;
+                        resultItem.appendChild(img);
+                        
+                        const span = document.createElement('span');
+                        span.textContent = item.name;
+                        resultItem.appendChild(span);
+
+                        resultItem.addEventListener('click', () => {
+                            // Deseleccionar cualquier otro item
+                            document.querySelectorAll('.search-result-item').forEach(itemHtml => {
+                                itemHtml.classList.remove('selected');
+                            });
+                            // Seleccionar el item actual
+                            resultItem.classList.add('selected');
+                            // Guardar el objeto completo del item seleccionado
+                            selectedSearchItem = {
+                                name: item.name,
+                                type: item.type,
+                                value: item.value
+                            }; 
+                            selectSearchedItemButton.style.display = 'block'; // Mostrar botón de seleccionar
+                        });
+
+                        searchResultsContainer.appendChild(resultItem);
+                    });
+                } else {
+                    searchResultsContainer.innerHTML = '<p style="color: rgba(255,255,255,0.7); padding: 10px;">No se encontraron resultados para "' + searchTerm + '".</p>';
+                }
+            }
+
+            if (searchIcon) {
+                searchIcon.addEventListener('click', () => {
+                    isSearchBarActive = !isSearchBarActive;
+                    if (isSearchBarActive) {
+                        searchBar.classList.add('active');
+                        itemSearchInput.focus(); // Enfocar el input
+                        // Limpiar resultados y selección al abrir la barra
+                        searchResultsContainer.innerHTML = '';
+                        selectSearchedItemButton.style.display = 'none';
+                        selectedSearchItem = null;
+                        itemSearchInput.value = ''; // Limpiar input
+                    } else {
+                        searchBar.classList.remove('active');
+                        searchResultsContainer.innerHTML = ''; // Limpiar al cerrar
+                        selectSearchedItemButton.style.display = 'none';
+                        selectedSearchItem = null;
+                    }
+                });
+            }
+
+            if (searchButton) {
+                searchButton.addEventListener('click', () => {
+                    const searchTerm = itemSearchInput.value.trim();
+                    if (searchTerm) {
+                        displaySearchResults(searchTerm);
+                    } else {
+                        searchResultsContainer.innerHTML = '<p style="color: rgba(255,255,255,0.7); padding: 10px;">Por favor, ingresa un término de búsqueda.</p>';
+                        selectSearchedItemButton.style.display = 'none';
+                        selectedSearchItem = null;
+                    }
+                });
+            }
+
+            if (selectSearchedItemButton) {
+                selectSearchedItemButton.addEventListener('click', () => {
+                    if (selectedSearchItem) {
+                        if (selectedSearchItem.type === 'design_shirt') {
+                            // Aplicar como imagen de camiseta principal
+                            mockupImg.src = selectedSearchItem.value;
+                            alert(`Camiseta "${selectedSearchItem.name}" aplicada.`);
+                            // Deseleccionar cualquier item de diseño de la pestaña 'design'
+                            designItems.forEach(di => di.classList.remove('selected'));
+                            // Deshabilitar colorOverlay si estaba activo
+                            colorOverlay.style.background = 'none';
+                        } else {
+                            // Aplicar como logo (personaje, superhéroe, jugador, balón, logo de equipo)
+                            camisetaLogoSuperpuesto.src = selectedSearchItem.value;
+                            camisetaLogoSuperpuesto.style.display = 'block';
+                            alert(`"${selectedSearchItem.name}" aplicado a la camiseta.`);
+                            // Deseleccionar cualquier item de logo de la pestaña 'logo'
+                            logoItems.forEach(li => li.classList.remove('selected'));
+                        }
+                        
+                        // Opcional: cerrar la barra de búsqueda después de aplicar
+                        searchBar.classList.remove('active');
+                        isSearchBarActive = false;
+                        searchResultsContainer.innerHTML = '';
+                        selectSearchedItemButton.style.display = 'none';
+                        selectedSearchItem = null; // Limpiar selección
+                        itemSearchInput.value = ''; // Limpiar input de búsqueda
+                    } else {
+                        alert('Por favor, selecciona un elemento de la lista primero.');
+                    }
+                });
+            }
+
+            // Cerrar barra de búsqueda si se hace clic fuera
+            document.addEventListener('click', (e) => {
+                // Asegúrate de que el clic no sea dentro de la barra de búsqueda ni en el icono de búsqueda
+                if (isSearchBarActive && !searchBar.contains(e.target) && !searchIcon.contains(e.target)) {
+                    isSearchBarActive = false;
+                    searchBar.classList.remove('active');
+                    searchResultsContainer.innerHTML = '';
+                    selectSearchedItemButton.style.display = 'none';
+                    selectedSearchItem = null;
+                }
+            });
+
+
+            // Icono 3: Horario (history)
+            const scheduleIcon = document.getElementById('schedule-icon');
+            const scheduleOverlay = document.getElementById('schedule-overlay');
+            const scheduleCloseBtn = scheduleOverlay.querySelector('.close-btn');
+
+            if (scheduleIcon) {
+                scheduleIcon.addEventListener('click', () => {
+                    scheduleOverlay.classList.add('active');
+                });
+            }
+            if (scheduleCloseBtn) {
+                scheduleCloseBtn.addEventListener('click', () => {
+                    scheduleOverlay.classList.remove('active');
+                });
+            }
+            if (scheduleOverlay) {
+                scheduleOverlay.addEventListener('click', (e) => {
+                    if (e.target === scheduleOverlay) {
+                        scheduleOverlay.classList.remove('active');
+                    }
+                });
+            }
+
+            // Icono 4: Tomar Captura (camera_alt) - Ahora simplemente notifica que se usa el de Descargar
+            const screenshotIcon = document.getElementById('screenshot-icon');
+            if (screenshotIcon) {
+                screenshotIcon.addEventListener('click', () => {
+                    alert('Utiliza el icono de "Descargar" (flecha hacia abajo) para obtener una imagen de tu camiseta.');
+                });
+            }
+            
+            // Icono 5: Pantalla Completa (fullscreen)
+            const fullscreenIcon = document.getElementById('fullscreen-icon');
+            let isFullscreen = false;
+
+            if (fullscreenIcon) {
+                fullscreenIcon.addEventListener('click', () => {
+                    const appContainer = document.querySelector('.app-container');
+
+                    if (!isFullscreen) {
+                        // Entrar en modo pantalla completa
+                        document.body.classList.add('fullscreen-active');
+                        // Se puede usar la API de Fullscreen del navegador si se desea una experiencia real
+                        // if (document.documentElement.requestFullscreen) {
+                        //     document.documentElement.requestFullscreen();
+                        // } else if (document.documentElement.mozRequestFullScreen) { // Firefox
+                        //     document.documentElement.mozRequestFullScreen();
+                        // } else if (document.documentElement.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                        //     document.documentElement.webkitRequestFullscreen();
+                        // } else if (document.documentElement.msRequestFullscreen) { // IE/Edge
+                        //     document.documentElement.msRequestFullscreen();
+                        // }
+                        fullscreenIcon.textContent = 'fullscreen_exit';
+                        alert('Modo pantalla completa activado. Presiona ESC para salir (o haz clic en el icono nuevamente).');
+                    } else {
+                        // Salir del modo pantalla completa
+                        document.body.classList.remove('fullscreen-active');
+                        // if (document.exitFullscreen) {
+                        //     document.exitFullscreen();
+                        // } else if (document.mozCancelFullScreen) { // Firefox
+                        //     document.mozCancelFullScreen();
+                        // } else if (document.documentElement.webkitExitFullscreen) { // Chrome, Safari and Opera
+                        //     document.documentElement.webkitExitFullscreen();
+                        // } else if (document.documentElement.msExitFullscreen) { // IE/Edge
+                        //     document.documentElement.msExitFullscreen();
+                        // }
+                        fullscreenIcon.textContent = 'fullscreen';
+                    }
+                    isFullscreen = !isFullscreen;
+                });
+
+                // Escuchar el evento de cambio de pantalla completa nativo (si se usara la API)
+                // document.addEventListener('fullscreenchange', (event) => {
+                //     if (!document.fullscreenElement) {
+                //         document.body.classList.remove('fullscreen-active');
+                //         fullscreenIcon.textContent = 'fullscreen';
+                //         isFullscreen = false;
+                //     }
+                // });
+            }
+
+            // Icono 6: Grabar Video (play_arrow)
+            const videoIcon = document.getElementById('video-icon');
+            let mediaRecorder;
+            let recordedChunks = [];
+            let isRecording = false;
+
+            if (videoIcon) {
+                videoIcon.addEventListener('click', async () => {
+                    if (!isRecording) {
+                        // Iniciar grabación
+                        try {
+                            const stream = await navigator.mediaDevices.getDisplayMedia({
+                                video: { mediaSource: 'screen' },
+                                audio: false // Puedes habilitar el audio si lo necesitas
+                            });
+
+                            mediaRecorder = new MediaRecorder(stream);
+                            recordedChunks = [];
+
+                            mediaRecorder.ondataavailable = (event) => {
+                                if (event.data.size > 0) {
+                                    recordedChunks.push(event.data);
+                                }
+                            };
+
+                            mediaRecorder.onstop = () => {
+                                const blob = new Blob(recordedChunks, {
+                                    type: 'video/webm'
+                                });
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                document.body.appendChild(a);
+                                a.style.display = 'none';
+                                a.href = url;
+                                a.download = 'procedimiento_camiseta.webm';
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                alert('Video del procedimiento guardado como "procedimiento_camiseta.webm"');
+                                videoIcon.textContent = 'play_arrow'; // Volver al icono de "grabar"
+                                isRecording = false;
+                            };
+
+                            mediaRecorder.start();
+                            isRecording = true;
+                            videoIcon.textContent = 'stop'; // Cambiar icono a "detener"
+                            alert('Grabación iniciada. Haz clic en el icono "stop" para detenerla y guardar el video.');
+
+                            // Detener la grabación si el usuario cierra la selección de pantalla
+                            stream.getVideoTracks()[0].addEventListener('ended', () => {
+                                if (isRecording) {
+                                    mediaRecorder.stop();
+                                }
+                            });
+
+                        } catch (err) {
+                            console.error('Error al iniciar la grabación:', err);
+                            alert('No se pudo iniciar la grabación. Asegúrate de permitir el acceso a la pantalla.');
+                            isRecording = false;
+                            videoIcon.textContent = 'play_arrow';
+                        }
+                    } else {
+                        // Detener grabación
+                        mediaRecorder.stop();
+                    }
+                });
+            }
+
+            // --- Funcionalidad del Botón de Descarga (file_download) ---
+            const downloadButton = document.getElementById('download-button');
+
+            if (downloadButton) {
+                downloadButton.addEventListener('click', async () => {
+                    // Ocultar elementos que no deben aparecer en la captura (sidebar, panel, etc.)
+                    const elementsToHide = [
+                        document.querySelector('.sidebar-left'),
+                        document.querySelector('.customization-panel'),
+                        document.querySelector('.discord-floating'),
+                        document.querySelector('.panel-header .header-icons'),
+                        document.getElementById('search-bar') // Asegúrate de ocultar también la barra de búsqueda si está activa
+                    ];
+
+                    elementsToHide.forEach(el => {
+                        if (el) el.style.visibility = 'hidden';
+                    });
+
+                    // Capturar el área de visualización del producto
+                    try {
+                        const canvas = await html2canvas(productDisplay, {
+                            backgroundColor: null, // Mantiene el fondo del product-display
+                            scale: 2 // Alta resolución
+                        });
+
+                        // Crear un enlace para descargar la imagen
+                        const link = document.createElement('a');
+                        link.download = 'mi_camiseta_personalizada.png';
+                        link.href = canvas.toDataURL('image/png');
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+
+                        alert('¡Tu diseño de camiseta ha sido descargado!');
+
+                    } catch (error) {
+                        console.error('Error al descargar la imagen:', error);
+                        alert('No se pudo descargar la imagen de la camiseta. Inténtalo de nuevo.');
+                    } finally {
+                        // Restaurar la visibilidad de los elementos ocultos
+                        elementsToHide.forEach(el => {
+                            if (el) el.style.visibility = 'visible';
+                        });
+                    }
+                });
+            }
+
+            // --- Funcionalidad del Botón de Compartir (share) ---
+            const shareIcon = document.getElementById('share-icon');
+            const shareOverlay = document.getElementById('share-overlay');
+            const sharePopup = document.getElementById('share-popup');
+            const shareOptionsContainer = sharePopup.querySelector('.share-options');
+            const shareCloseBtn = sharePopup.querySelector('.close-btn');
+
+            // Función para generar y abrir el popup de compartir
+            async function openSharePopup() {
+                shareOptionsContainer.innerHTML = ''; // Limpiar opciones anteriores
+
+                // Ocultar elementos antes de la captura para una imagen limpia
+                const elementsToHideForShare = [
+                    document.querySelector('.sidebar-left'),
+                    document.querySelector('.customization-panel'),
+                    document.querySelector('.discord-floating'),
+                    document.querySelector('.panel-header .header-icons'),
+                    document.getElementById('search-bar')
+                ];
+                elementsToHideForShare.forEach(el => { if (el) el.style.visibility = 'hidden'; });
+
+                let imageUrl = '';
+                try {
+                    const canvas = await html2canvas(productDisplay, {
+                        backgroundColor: null,
+                        scale: 1 // No tan alta resolución como la descarga directa para ser más rápido
+                    });
+                    imageUrl = canvas.toDataURL('image/png');
+                } catch (error) {
+                    console.error('Error al generar imagen para compartir:', error);
+                    alert('No se pudo generar una vista previa de la camiseta para compartir.');
+                    // Restaurar elementos y salir si hay error en la captura
+                    elementsToHideForShare.forEach(el => { if (el) el.style.visibility = 'visible'; });
+                    return;
+                } finally {
+                    // Asegurarse de restaurar la visibilidad de los elementos ocultos después de la captura
+                    elementsToHideForShare.forEach(el => { if (el) el.style.visibility = 'visible'; });
+                }
+
+                // URL base para compartir (se puede reemplazar por la URL de tu sitio real)
+                const shareUrl = window.location.href; 
+                const shareText = "¡He diseñado mi propia camiseta personalizada! Échale un vistazo:";
+
+                // Opciones de compartir
+                const sharingOptions = [
+                    { name: "WhatsApp", icon: "chat", colorClass: "whatsapp", url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}` },
+                    { name: "Facebook", icon: "facebook", colorClass: "facebook", url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}` },
+                    { name: "Twitter (X)", icon: "alternate_email", colorClass: "twitter", url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}` },
+                    { name: "LinkedIn", icon: "linkedin", colorClass: "linkedin", url: `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent("Mi Diseño de Camiseta")}&summary=${encodeURIComponent(shareText)}` },
+                    { name: "Correo Electrónico", icon: "email", colorClass: "email", url: `mailto:?subject=${encodeURIComponent("Mira mi diseño de camiseta!")}&body=${encodeURIComponent(shareText + ' ' + shareUrl)}` },
+                    { name: "Copiar Enlace", icon: "link", colorClass: "copy", action: () => {
+                        navigator.clipboard.writeText(shareUrl).then(() => {
+                            alert('Enlace copiado al portapapeles.');
+                            shareOverlay.classList.remove('active');
+                        }).catch(err => {
+                            console.error('Error al copiar el enlace:', err);
+                            alert('No se pudo copiar el enlace.');
+                        });
+                    }}
+                ];
+
+                // Comprobar si Web Share API está disponible (para compartir a apps nativas)
+                if (navigator.share) {
+                    const webShareButton = document.createElement('button');
+                    webShareButton.classList.add('share-button');
+                    webShareButton.innerHTML = `<span class="material-icons">share</span> Compartir (Web Share)`;
+                    webShareButton.addEventListener('click', async () => {
+                        try {
+                            // Para compartir imagen con Web Share API, necesitamos un Blob
+                            const response = await fetch(imageUrl);
+                            const blob = await response.blob();
+                            const filesArray = [new File([blob], 'mi_camiseta.png', { type: 'image/png' })];
+
+                            await navigator.share({
+                                title: 'Mi Camiseta Personalizada',
+                                text: shareText,
+                                url: shareUrl,
+                                files: filesArray
+                            });
+                            console.log('Contenido compartido con éxito.');
+                            shareOverlay.classList.remove('active'); // Cerrar popup después de compartir
+                        } catch (error) {
+                            console.error('Error al usar Web Share API:', error);
+                            // Si el usuario cancela, no es un error que debamos notificar
+                            if (error.name !== 'AbortError') {
+                                alert('No se pudo compartir usando la API de Web Share. Intenta con las otras opciones.');
+                            }
+                        }
+                    });
+                    shareOptionsContainer.appendChild(webShareButton);
+                }
+
+                // Añadir botones para compartir en redes sociales/email/copiar
+                sharingOptions.forEach(option => {
+                    const button = document.createElement(option.url ? 'a' : 'button');
+                    button.classList.add('share-button', option.colorClass);
+                    button.innerHTML = `<span class="material-icons">${option.icon}</span> ${option.name}`;
+                    if (option.url) {
+                        button.href = option.url;
+                        button.target = "_blank"; // Abrir en nueva pestaña
+                        button.rel = "noopener noreferrer"; // Seguridad
+                    } else if (option.action) {
+                        button.addEventListener('click', option.action);
+                    }
+                    shareOptionsContainer.appendChild(button);
+                });
+
+                shareOverlay.classList.add('active'); // Mostrar el popup
+            }
+
+            if (shareIcon) {
+                shareIcon.addEventListener('click', openSharePopup);
+            }
+
+            if (shareCloseBtn) {
+                shareCloseBtn.addEventListener('click', () => {
+                    shareOverlay.classList.remove('active');
+                });
+            }
+
+            if (shareOverlay) {
+                shareOverlay.addEventListener('click', (e) => {
+                    if (e.target === shareOverlay) {
+                        shareOverlay.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
